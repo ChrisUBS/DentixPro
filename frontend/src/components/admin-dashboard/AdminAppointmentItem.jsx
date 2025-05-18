@@ -1,13 +1,11 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Calendar, Clock, CheckCircle, XCircle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatAppointmentDate, getServiceById } from "@/lib/appointment-service";
+import { formatAppointmentDate } from "@/lib/appointment-service";
 
 const AdminAppointmentItem = ({ appointment, onOpenDialog }) => {
-  const service = getServiceById(appointment.serviceId);
   const isPast = new Date(appointment.date) < new Date() && appointment.status === "pendiente";
 
   const getStatusBadgeClass = (status) => {
@@ -28,11 +26,11 @@ const AdminAppointmentItem = ({ appointment, onOpenDialog }) => {
     }
   };
 
-  const cardBorderClass = 
-    appointment.status === "completada" 
-      ? "border-l-green-500" 
-      : appointment.status === "cancelada" 
-        ? "border-l-red-500" 
+  const cardBorderClass =
+    appointment.status === "completada"
+      ? "border-l-green-500"
+      : appointment.status === "cancelada"
+        ? "border-l-red-500"
         : "border-l-primary";
 
   return (
@@ -55,38 +53,42 @@ const AdminAppointmentItem = ({ appointment, onOpenDialog }) => {
                   </span>
                 )}
               </div>
-              
+
               <div className="flex items-start gap-3 mb-4">
                 <div className="bg-gray-100 p-2 rounded-full">
                   <User className="h-5 w-5 text-gray-600" />
                 </div>
                 <div>
-                  <h3 className="font-bold">{appointment.userName}</h3>
-                  <p className="text-sm text-gray-600">{appointment.userEmail}</p>
+                  <h3 className="font-bold">
+                    {appointment.userName || "Usuario desconocido"}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {appointment.userEmail || "Email no disponible"}
+                  </p>
                 </div>
               </div>
-              
+
               <h4 className="text-lg font-semibold mb-2">
-                {service ? service.name : "Servicio no disponible"}
+                {appointment.title || "Servicio no disponible"}
               </h4>
-              
+
               <div className="flex items-center text-gray-600 mb-2">
                 <Calendar className="h-4 w-4 mr-2" />
                 <span>{formatAppointmentDate(appointment.date)}</span>
               </div>
-              
+
               <div className="flex items-center text-gray-600">
                 <Clock className="h-4 w-4 mr-2" />
                 <span>{appointment.time} hrs</span>
               </div>
-              
+
               {appointment.notes && (
                 <div className="mt-4 p-3 bg-gray-50 rounded-md">
                   <p className="text-sm text-gray-600">{appointment.notes}</p>
                 </div>
               )}
             </div>
-            
+
             <div className="bg-gray-50 p-6 flex flex-col justify-center items-center gap-3">
               {appointment.status === "pendiente" && (
                 <>
@@ -107,14 +109,14 @@ const AdminAppointmentItem = ({ appointment, onOpenDialog }) => {
                   </Button>
                 </>
               )}
-              
+
               {appointment.status === "completada" && (
                 <div className="text-center">
                   <CheckCircle className="h-6 w-6 text-green-500 mx-auto mb-2" />
                   <p className="text-sm text-gray-600">Cita completada</p>
                 </div>
               )}
-              
+
               {appointment.status === "cancelada" && (
                 <div className="text-center">
                   <XCircle className="h-6 w-6 text-red-500 mx-auto mb-2" />

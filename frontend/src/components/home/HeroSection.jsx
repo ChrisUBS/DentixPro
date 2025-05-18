@@ -1,11 +1,10 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
-const HeroSection = ({ session }) => {
+const HeroSection = ({ user }) => {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 dental-gradient opacity-90 z-0"></div>
@@ -25,9 +24,9 @@ const HeroSection = ({ session }) => {
             Sistema de gestión de citas para nuestro consultorio dental. Agenda tu cita de manera fácil y rápida.
           </p>
           
-          {session ? (
+          {user ? (
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {session.role === "admin" ? (
+              {user.rol === "admin" ? (
                 <Link to="/admin">
                   <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100">
                     Panel de Administración
@@ -42,7 +41,7 @@ const HeroSection = ({ session }) => {
                     </Button>
                   </Link>
                   <Link to="/dashboard">
-                    <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/20">
+                    <Button size="lg" variant="outline" className="bg-white text-indigo-600 hover:bg-gray-100">
                       Ver Mis Citas
                     </Button>
                   </Link>

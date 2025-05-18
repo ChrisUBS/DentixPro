@@ -1,13 +1,19 @@
-
 import React from "react";
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { dentalServices, formatAppointmentDate } from "@/lib/appointment-service";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
-// Re-declare Textarea here as it's used in this component
+// Textarea personalizado
 const Textarea = React.forwardRef(({ className, ...props }, ref) => {
   return (
     <textarea
@@ -19,8 +25,18 @@ const Textarea = React.forwardRef(({ className, ...props }, ref) => {
 });
 Textarea.displayName = "Textarea";
 
+// Utilidad local para formatear la fecha
+const formatAppointmentDate = (dateString) =>
+  format(new Date(dateString), "EEEE d 'de' MMMM 'de' yyyy", { locale: es });
 
-const AppointmentFormFields = ({ formData, onFieldChange, availableTimes, isSubmitting, onSubmit }) => {
+const AppointmentFormFields = ({
+  formData,
+  onFieldChange,
+  availableTimes,
+  isSubmitting,
+  onSubmit,
+  services, // ✅ nueva prop
+}) => {
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div className="space-y-2">
@@ -33,7 +49,7 @@ const AppointmentFormFields = ({ formData, onFieldChange, availableTimes, isSubm
             <SelectValue placeholder="Selecciona un servicio" />
           </SelectTrigger>
           <SelectContent>
-            {dentalServices.map((service) => (
+            {services.map((service) => (
               <SelectItem key={service.id} value={service.id.toString()}>
                 {service.name} ({service.duration} min)
               </SelectItem>
@@ -66,7 +82,13 @@ const AppointmentFormFields = ({ formData, onFieldChange, availableTimes, isSubm
           disabled={!formData.date}
         >
           <SelectTrigger>
-            <SelectValue placeholder={formData.date ? "Selecciona una hora" : "Primero selecciona una fecha"} />
+            <SelectValue
+              placeholder={
+                formData.date
+                  ? "Selecciona una hora"
+                  : "Primero selecciona una fecha"
+              }
+            />
           </SelectTrigger>
           <SelectContent>
             {availableTimes.length > 0 ? (
@@ -82,11 +104,13 @@ const AppointmentFormFields = ({ formData, onFieldChange, availableTimes, isSubm
             )}
           </SelectContent>
         </Select>
-        {formData.date && availableTimes.length === 0 && !formData.time && (
-          <p className="text-sm text-red-500 mt-1">
-            No hay horarios disponibles para esta fecha. Por favor, selecciona otra fecha.
-          </p>
-        )}
+        {formData.date &&
+          availableTimes.length === 0 &&
+          !formData.time && (
+            <p className="text-sm text-red-500 mt-1">
+              No hay horarios disponibles para esta fecha. Por favor, selecciona otra fecha.
+            </p>
+          )}
       </div>
 
       <div className="space-y-2">
@@ -94,8 +118,8 @@ const AppointmentFormFields = ({ formData, onFieldChange, availableTimes, isSubm
         <Textarea
           id="notes"
           placeholder="Describe brevemente tu motivo de consulta o cualquier información relevante..."
-          value={formData.notes}
-          onChange={(e) => onFieldChange("notes", e.target.value)}
+          value={formData.description}
+          onChange={(e) => onFieldChange("description", e.target.value)}
         />
       </div>
 
@@ -105,7 +129,7 @@ const AppointmentFormFields = ({ formData, onFieldChange, availableTimes, isSubm
           <div className="space-y-1 text-sm text-blue-700">
             <p>
               <span className="font-medium">Servicio:</span>{" "}
-              {dentalServices.find(s => s.id.toString() === formData.serviceId)?.name}
+              {services.find((s) => s.id.toString() === formData.serviceId)?.name}
             </p>
             <p>
               <span className="font-medium">Fecha:</span>{" "}
@@ -121,13 +145,34 @@ const AppointmentFormFields = ({ formData, onFieldChange, availableTimes, isSubm
       <Button
         type="submit"
         className="w-full"
-        disabled={isSubmitting || !formData.serviceId || !formData.date || !formData.time}
+        disabled={
+          isSubmitting ||
+          !formData.serviceId ||
+          !formData.date ||
+          !formData.time
+        }
       >
         {isSubmitting ? (
           <div className="flex items-center">
-            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
             Agendando cita...
           </div>

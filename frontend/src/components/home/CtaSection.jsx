@@ -1,10 +1,9 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Calendar } from 'lucide-react';
 
-const CtaSection = ({ session }) => {
+const CtaSection = ({ user }) => {
   return (
     <section className="py-16 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white">
       <div className="container mx-auto px-4 text-center">
@@ -13,8 +12,8 @@ const CtaSection = ({ session }) => {
           Agenda tu cita ahora y da el primer paso hacia una mejor salud dental.
         </p>
         
-        {session ? (
-          session.role === "user" ? (
+        {user ? (
+          user.rol === "user" ? (
             <Link to="/agendar-cita">
               <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100">
                 <Calendar className="mr-2 h-5 w-5" />

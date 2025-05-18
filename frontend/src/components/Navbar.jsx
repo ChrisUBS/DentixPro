@@ -1,20 +1,19 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Outdent as Tooth, Menu, X, User, LogOut, Calendar, Home } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { logoutUser } from "@/lib/auth-service";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
-const Navbar = ({ session, setSession }) => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { user, logout, isAuthenticated } = useAuth();
 
   const handleLogout = () => {
-    logoutUser();
-    setSession(null);
+    logout();
     toast({
       title: "Sesión cerrada",
       description: "Has cerrado sesión correctamente",
@@ -41,54 +40,40 @@ const Navbar = ({ session, setSession }) => {
           </span>
         </Link>
 
-        {/* Menú de navegación para pantallas grandes */}
+        {/* Menú para escritorio */}
         <nav className="hidden md:flex items-center space-x-6">
-          <Link
-            to="/"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
+          <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">
             Inicio
           </Link>
-          
-          {session ? (
+
+          {isAuthenticated ? (
             <>
-              {session.role === "admin" ? (
-                <Link
-                  to="/admin"
-                  className="text-sm font-medium transition-colors hover:text-primary"
-                >
+              {user.rol === "admin" ? (
+                <Link to="/admin" className="text-sm font-medium hover:text-primary">
                   Panel de Administración
                 </Link>
               ) : (
                 <>
-                  <Link
-                    to="/dashboard"
-                    className="text-sm font-medium transition-colors hover:text-primary"
-                  >
+                  <Link to="/dashboard" className="text-sm font-medium hover:text-primary">
                     Mis Citas
                   </Link>
-                  <Link
-                    to="/agendar-cita"
-                    className="text-sm font-medium transition-colors hover:text-primary"
-                  >
+                  <Link to="/agendar-cita" className="text-sm font-medium hover:text-primary">
                     Agendar Cita
                   </Link>
                 </>
               )}
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium">
-                  Hola, {session.name}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="flex items-center gap-1"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span className="sr-only md:not-sr-only">Cerrar sesión</span>
-                </Button>
-              </div>
+              <span className="text-sm font-medium text-muted-foreground">
+                Hola, {user.name}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="flex items-center gap-1"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="sr-only md:not-sr-only">Cerrar sesión</span>
+              </Button>
             </>
           ) : (
             <div className="flex items-center space-x-2">
@@ -104,17 +89,9 @@ const Navbar = ({ session, setSession }) => {
           )}
         </nav>
 
-        {/* Botón de menú para móviles */}
-        <button
-          className="md:hidden"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
+        {/* Botón menú móvil */}
+        <button className="md:hidden" onClick={toggleMenu} aria-label="Toggle menu">
+          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
@@ -136,10 +113,10 @@ const Navbar = ({ session, setSession }) => {
               <Home className="h-5 w-5" />
               <span>Inicio</span>
             </Link>
-            
-            {session ? (
+
+            {isAuthenticated ? (
               <>
-                {session.role === "admin" ? (
+                {user.rol === "admin" ? (
                   <Link
                     to="/admin"
                     className="flex items-center space-x-2 p-2 rounded-md hover:bg-accent"
@@ -170,7 +147,7 @@ const Navbar = ({ session, setSession }) => {
                 )}
                 <div className="border-t pt-4">
                   <div className="px-2 mb-2 text-sm font-medium">
-                    Hola, {session.name}
+                    Hola, {user.name}
                   </div>
                   <Button
                     variant="ghost"
@@ -187,19 +164,13 @@ const Navbar = ({ session, setSession }) => {
               </>
             ) : (
               <div className="space-y-2">
-                <Link
-                  to="/login"
-                  onClick={() => setIsMenuOpen(false)}
-                >
+                <Link to="/login" onClick={() => setIsMenuOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start">
                     <User className="h-5 w-5 mr-2" />
                     Iniciar sesión
                   </Button>
                 </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setIsMenuOpen(false)}
-                >
+                <Link to="/register" onClick={() => setIsMenuOpen(false)}>
                   <Button className="w-full">Registrarse</Button>
                 </Link>
               </div>

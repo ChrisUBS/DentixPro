@@ -1,9 +1,15 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { formatAppointmentDate, getServiceById } from "@/lib/appointment-service";
+import { formatAppointmentDate } from "@/lib/appointment-service"; // O tu nuevo formateador
 
 const UpdateStatusDialog = ({ isOpen, onOpenChange, appointment, action, onConfirm }) => {
   if (!appointment) return null;
@@ -21,20 +27,24 @@ const UpdateStatusDialog = ({ isOpen, onOpenChange, appointment, action, onConfi
               : "¿Estás seguro de que deseas cancelar esta cita?"}
           </DialogDescription>
         </DialogHeader>
+
         <div className="bg-gray-50 p-4 rounded-md">
           <p className="font-medium">{appointment.userName}</p>
           <p className="text-sm text-gray-600">{appointment.userEmail}</p>
           <Separator className="my-2" />
           <p className="text-sm">
-            <span className="font-medium">Fecha:</span> {formatAppointmentDate(appointment.date)}
+            <span className="font-medium">Fecha:</span>{" "}
+            {formatAppointmentDate(appointment.date)}
           </p>
           <p className="text-sm">
             <span className="font-medium">Hora:</span> {appointment.time} hrs
           </p>
           <p className="text-sm">
-            <span className="font-medium">Servicio:</span> {getServiceById(appointment.serviceId)?.name || "No disponible"}
+            <span className="font-medium">Servicio:</span>{" "}
+            {appointment.title || "No disponible"}
           </p>
         </div>
+
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Volver

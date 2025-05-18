@@ -1,13 +1,13 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Calendar, Clock, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatAppointmentDate, getServiceById } from "@/lib/appointment-service";
+import { formatAppointmentDate } from "@/lib/appointment-service";
 
 const AppointmentListItem = ({ appointment, onCancel, type }) => {
-  const service = getServiceById(appointment.serviceId);
+  const serviceName = appointment.title || "Servicio no disponible";
+  const notes = appointment.description || "";
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
@@ -24,25 +24,25 @@ const AppointmentListItem = ({ appointment, onCancel, type }) => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case "pendiente":
+      case "pending":
         return "Pendiente";
-      case "completada":
+      case "completed":
         return "Completada";
-      case "cancelada":
+      case "cancelled":
         return "Cancelada";
       default:
         return status;
     }
   };
-  
-  const cardBorderClass = 
-    type === "upcoming" 
+
+  const cardBorderClass =
+    type === "upcoming"
       ? "border-l-primary"
-      : appointment.status === "completada"
-        ? "border-l-green-500"
-        : appointment.status === "cancelada"
-          ? "border-l-red-500"
-          : "border-l-gray-500";
+      : appointment.status === "completed"
+      ? "border-l-green-500"
+      : appointment.status === "cancelled"
+      ? "border-l-red-500"
+      : "border-l-gray-500";
 
   return (
     <motion.div
@@ -55,12 +55,16 @@ const AppointmentListItem = ({ appointment, onCancel, type }) => {
           <div className={`grid grid-cols-1 ${type === "upcoming" ? "md:grid-cols-4" : ""} gap-4`}>
             <div className={`p-6 ${type === "upcoming" ? "md:col-span-3" : ""}`}>
               <div className="flex items-center mb-2">
-                <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${getStatusBadgeClass(appointment.status)}`}>
+                <span
+                  className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${getStatusBadgeClass(
+                    appointment.status
+                  )}`}
+                >
                   {getStatusText(appointment.status)}
                 </span>
               </div>
               <h3 className="text-xl font-bold mb-2">
-                {service ? service.name : "Servicio no disponible"}
+                {serviceName}
               </h3>
               <div className="flex items-center text-gray-600 mb-2">
                 <Calendar className="h-4 w-4 mr-2" />
@@ -70,9 +74,9 @@ const AppointmentListItem = ({ appointment, onCancel, type }) => {
                 <Clock className="h-4 w-4 mr-2" />
                 <span>{appointment.time} hrs</span>
               </div>
-              {type === "upcoming" && appointment.notes && (
+              {type === "upcoming" && notes && (
                 <div className="mt-4 p-3 bg-gray-50 rounded-md">
-                  <p className="text-sm text-gray-600">{appointment.notes}</p>
+                  <p className="text-sm text-gray-600">{notes}</p>
                 </div>
               )}
             </div>
